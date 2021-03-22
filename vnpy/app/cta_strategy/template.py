@@ -1,5 +1,6 @@
 """"""
 from abc import ABC
+from collections import defaultdict
 from copy import copy
 from typing import Any, Callable
 
@@ -16,13 +17,14 @@ class CtaTemplate(ABC):
     author = ""
     parameters = []
     variables = []
+    indicators = defaultdict(list)
 
     def __init__(
-        self,
-        cta_engine: Any,
-        strategy_name: str,
-        vt_symbol: str,
-        setting: dict,
+            self,
+            cta_engine: Any,
+            strategy_name: str,
+            vt_symbol: str,
+            setting: dict,
     ):
         """"""
         self.cta_engine = cta_engine
@@ -173,13 +175,13 @@ class CtaTemplate(ABC):
         return self.send_order(Direction.LONG, Offset.CLOSE, price, volume, stop, lock)
 
     def send_order(
-        self,
-        direction: Direction,
-        offset: Offset,
-        price: float,
-        volume: float,
-        stop: bool = False,
-        lock: bool = False
+            self,
+            direction: Direction,
+            offset: Offset,
+            price: float,
+            volume: float,
+            stop: bool = False,
+            lock: bool = False
     ):
         """
         Send a new order.
@@ -225,11 +227,11 @@ class CtaTemplate(ABC):
         return self.cta_engine.get_pricetick(self)
 
     def load_bar(
-        self,
-        days: int,
-        interval: Interval = Interval.MINUTE,
-        callback: Callable = None,
-        use_database: bool = False
+            self,
+            days: int,
+            interval: Interval = Interval.MINUTE,
+            callback: Callable = None,
+            use_database: bool = False
     ):
         """
         Load historical bar data for initializing strategy.
@@ -271,6 +273,14 @@ class CtaTemplate(ABC):
         """
         if self.trading:
             self.cta_engine.sync_strategy_data(self)
+
+    def plot_string(self, name: str, value: str, bar: BarData, pos: int):
+        self.indicators[name].append({
+            "value": value,
+            "bar": bar,
+            "pos": pos,
+
+        })
 
 
 class CtaSignal(ABC):

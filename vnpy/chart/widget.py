@@ -1,3 +1,4 @@
+import sys
 from typing import List, Dict, Type
 
 import pyqtgraph as pg
@@ -12,7 +13,6 @@ from .base import (
 )
 from .axis import DatetimeAxis
 from .item import ChartItem
-
 
 pg.setConfigOptions(antialias=True)
 
@@ -34,8 +34,8 @@ class ChartWidget(pg.PlotWidget):
         self._first_plot: pg.PlotItem = None
         self._cursor: ChartCursor = None
 
-        self._right_ix: int = 0                     # Index of most right data
-        self._bar_count: int = self.MIN_BAR_COUNT   # Total bar visible in chart
+        self._right_ix: int = 0  # Index of most right data
+        self._bar_count: int = self.MIN_BAR_COUNT  # Total bar visible in chart
 
         self._init_ui()
 
@@ -60,11 +60,11 @@ class ChartWidget(pg.PlotWidget):
                 self, self._manager, self._plots, self._item_plot_map)
 
     def add_plot(
-        self,
-        plot_name: str,
-        minimum_height: int = 80,
-        maximum_height: int = None,
-        hide_x_axis: bool = False
+            self,
+            plot_name: str,
+            minimum_height: int = 80,
+            maximum_height: int = None,
+            hide_x_axis: bool = False
     ) -> None:
         """
         Add plot area.
@@ -112,10 +112,10 @@ class ChartWidget(pg.PlotWidget):
         self._layout.addItem(plot)
 
     def add_item(
-        self,
-        item_class: Type[ChartItem],
-        item_name: str,
-        plot_name: str
+            self,
+            item_class: Type[ChartItem],
+            item_name: str,
+            plot_name: str
     ):
         """
         Add chart item.
@@ -240,6 +240,10 @@ class ChartWidget(pg.PlotWidget):
             self._on_key_up()
         elif event.key() == QtCore.Qt.Key_Down:
             self._on_key_down()
+        elif event.key() == QtCore.Qt.Key_R:
+            self._on_key_r()
+        elif event.key() == QtCore.Qt.Key_Q:
+            self._on_key_q()
 
     def wheelEvent(self, event: QtGui.QWheelEvent) -> None:
         """
@@ -294,6 +298,22 @@ class ChartWidget(pg.PlotWidget):
         self._update_x_range()
         self._cursor.update_info()
 
+    def _on_key_r(self) -> None:
+        """
+        Reset Zoom of the chart.
+        """
+
+        self._bar_count = self._manager.get_count()
+
+        self._update_x_range()
+        self._cursor.update_info()
+
+    def _on_key_q(self) -> None:
+        """
+        Close the Chart
+        """
+        sys.exit()
+
     def move_to_right(self) -> None:
         """
         Move chart to the most right.
@@ -307,11 +327,11 @@ class ChartCursor(QtCore.QObject):
     """"""
 
     def __init__(
-        self,
-        widget: ChartWidget,
-        manager: BarManager,
-        plots: Dict[str, pg.GraphicsObject],
-        item_plot_map: Dict[ChartItem, pg.GraphicsObject]
+            self,
+            widget: ChartWidget,
+            manager: BarManager,
+            plots: Dict[str, pg.GraphicsObject],
+            item_plot_map: Dict[ChartItem, pg.GraphicsObject]
     ):
         """"""
         super().__init__()
