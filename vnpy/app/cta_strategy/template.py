@@ -17,7 +17,8 @@ class CtaTemplate(ABC):
     author = ""
     parameters = []
     variables = []
-    indicators = defaultdict(list)
+    _str_plots = defaultdict(list)
+    _num_plots = defaultdict(list)
 
     def __init__(
             self,
@@ -274,13 +275,26 @@ class CtaTemplate(ABC):
         if self.trading:
             self.cta_engine.sync_strategy_data(self)
 
-    def plot_string(self, name: str, value: str, bar: BarData, pos: int):
-        self.indicators[name].append({
+    def plot_str(self, name: str, value: str, bar: BarData, pos: int = 0,color:str="yellow"):
+        self._str_plots[name].append({
             "value": value,
             "bar": bar,
             "pos": pos,
-
+            "color": color,
         })
+
+    def plot_num(self, name: str, value: float, bar: BarData, color: int = "red"):
+        self._num_plots[name].append({
+            "value": value,
+            "bar": bar,
+            "color": color,
+        })
+
+    def get_str_plots(self):
+        return self._str_plots
+
+    def get_num_plots(self):
+        return self._num_plots
 
 
 class CtaSignal(ABC):
